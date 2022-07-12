@@ -125,7 +125,6 @@ jobs:
           name: install tar and gzip
           command: |
             yum install -y tar gzip
-      # Checkout code from git
       - run:
           name: Ensure back-end infrastructure exists
           command: |
@@ -147,7 +146,7 @@ jobs:
           command: |
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --output text >> project/.circleci/ansible/inventory.txt
+              --output text >> .circleci/ansible/inventory.txt
             exit 1
       - persist_to_workspace:
           root: ~/
