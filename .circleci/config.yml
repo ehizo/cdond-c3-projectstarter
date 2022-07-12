@@ -2,23 +2,33 @@ version: 2.1
 
 # Define the jobs we want to run for this project
 jobs:
-  build:
+  build-frontend:
     docker:
       - image: cimg/node:13.8.0
     steps:
       - checkout
-      - run: echo "this is the build job"
-  test:
+      - run:
+          name: Build front-end
+          command: |
+            cd frontend
+            npm install
+            npm run build
+
+  build-backend:
     docker:
       - image: cimg/node:13.8.0
     steps:
       - checkout
-      - run: echo "this is the test job"
+      - run:
+          name: Back-end build
+          command: |
+             cd backend
+             npm install
+             npm run build
 
 # Orchestrate our job run sequence
 workflows:
-  build_and_test:
+  default:
     jobs:
-      - build
-      - test:
-          requires: [build]
+      - build-frontend
+      - build-backend
