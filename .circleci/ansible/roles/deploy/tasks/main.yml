@@ -1,7 +1,8 @@
+---
 - name: "Move backend files to web server"
   become: true
   copy:
-    src: /root/project/backend.tar.gz
+    src: /root/project/artifact.tar.gz
     dest: "~/"
     owner: ubuntu
     group: ubuntu
@@ -9,13 +10,13 @@
 
 - name: "Check for tar file"
   become: true
-  command: ls -l ~/backend.tar.gz
+  command: ls -l ~/artifact.tar.gz
 
 - name: "Unzip backend files"
   become: true
   shell: |
-    tar xvzf ~/backend.tar.gz
-    rm -rf ~/backend.tar.gz
+    tar xvzf ~/artifact.tar.gz
+    rm -rf ~/artifact.tar.gz
 
 - name: "start server"
   become: true
