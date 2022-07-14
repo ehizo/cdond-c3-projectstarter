@@ -306,7 +306,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update --no-cache tar gzip ansible
+            apk add --update --no-cache tar gzip ansible rsync openssh
             pip install awscli
             aws --version
             apk add --update nodejs npm
@@ -320,9 +320,7 @@ jobs:
             cd ..
             # Zip the directory
             tar -C backend -czvf artifact.tar.gz .
-            # please review this later
-            mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
-            mv artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
+            export ANSIBLE_HOST_KEY_CHECKING=False
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt

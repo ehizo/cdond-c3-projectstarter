@@ -1,29 +1,22 @@
 ---
-- name: "Move backend files to web server"
-  become: true
-  copy:
-    src: /root/project/artifact.tar.gz
-    dest: "~/"
-    owner: ubuntu
-    group: ubuntu
-    mode: 0777
+  - name: "Copy backend files"
+    become: yes
+    synchronize:
+      src: /root/project/backend
+      dest: /home/ubuntu
+      recursive: true
 
-- name: "Check for tar file"
-  become: true
-  command: ls -l ~/artifact.tar.gz
-
-- name: "Unzip backend files"
-  become: true
-  shell: |
-    tar xvzf ~/artifact.tar.gz
-    rm -rf ~/artifact.tar.gz
-
-- name: "start server"
-  become: true
-  shell: >
-    pwd
-    chmod a+rwx /backend
-    cd /backend
-    npm install
-    pm2 stop default
-    pm2 start npm -- start
+  - name: "npm install and build"
+    become: true
+    shell: |
+      npm install
+      npm run build
+    args:  
+        chdir: /home/ubuntu/backend
+        
+  - name: "Deploy code"
+    become: true
+    shell: |
+      pm2 start -f ./main.js
+    args:  
+        chdir: /home/ubuntu/backend/dist
