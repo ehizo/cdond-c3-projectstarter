@@ -206,6 +206,11 @@ jobs:
             cd ~/project/.circleci/ansible
             ansible-playbook -i inventory.txt configure-server.yml
             # cat  ~/project/.circleci/ansible/inventory.txt
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - .circleci/ansible/inventory.txt
+            - backend/
       # code to rollback on failure
       - destroy-environment:
           workflowid: ${CIRCLE_WORKFLOW_ID:0:7} 
