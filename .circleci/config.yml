@@ -313,7 +313,7 @@ jobs:
             apk add --update npm
             apk add --update nodejs
       - run:
-          name: Deploy backend
+          name: Deploy backend 1
           command: |
             echo ENVIRONMENT=production > "backend/.env"
             echo TYPEORM_CONNECTION=postgres >> "backend/.env"
@@ -331,21 +331,13 @@ jobs:
             npm run build
             tar -czvf /etc/backend.tar.gz ./
             chmod 644 /etc/backend.tar.gz
+      - run:
+          name: Deploy backend 2
+          command: |
             export ANSIBLE_HOST_KEY_CHECKING=False
-            # tar -C backend -czvf backend.tar.gz .
-            # cd .circleci/ansible
-            # ansible-playbook -i inventory.txt deploy-backend.yml -vv
-
-            # cd backend
-            # npm i
-            # npm run build
-            # cd ..
-            # # Zip the directory
-            # tar -C backend -czvf artifact.tar.gz .
-            cd .circleci/ansible
-            echo "Contents  of the inventory.txt file is -------"
-            cat inventory.txt
-            ansible-playbook -i inventory.txt deploy-backend.yml -vv
+            ansible-playbook \
+              -i .circleci/ansible/inventory.txt \
+              .circleci/ansible/deploy-backend.yml
       # code to rollback on failure
       - revert-migrations
       - destroy-environment 
