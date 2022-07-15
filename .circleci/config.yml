@@ -310,22 +310,24 @@ jobs:
             - "fe:36:a6:1b:99:9f:c7:6f:be:04:9f:76:e9:da:dc:c6"
       # attach workspace
       - attach_workspace:
-          at: ~/
-          # paths:
-            # - project/.circleci/ansible/inventory.txt
+          at: ~/project
+      - restore_cache:
+          keys: [backend-build]
       - run:
           name: Install dependencies
           command: |
-            apk add --update --no-cache tar gzip ansible rsync openssh
+            apk add --update --no-cache tar gzip ansible rsync openssh-client
             pip install awscli
-            aws --version
             apk add --update nodejs npm
             apk add --update curl
       - run:
           name: Deploy backend
+          no_output_timeout: 30m
           command: |
-            cd ~/project/.circleci/ansible
+            pwd
             export ANSIBLE_HOST_KEY_CHECKING=False
+            tar -C backend -czvf backend.tar.gz .
+            cd .circleci/ansible
             ansible-playbook -i inventory.txt deploy-backend.yml
 
             # cd backend
@@ -485,5 +487,5 @@ workflows:
           requires: [run-migrations]
       - deploy-backend:
           requires: [run-migrations]
-      # - smoke-test:
-          # requires: [deploy-backend, deploy-frontend]
+      - smoke-test:
+          requires: [deploy-backend, deploy-frontend]
