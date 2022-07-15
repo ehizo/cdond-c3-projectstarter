@@ -328,7 +328,7 @@ jobs:
             export ANSIBLE_HOST_KEY_CHECKING=False
             tar -C backend -czvf backend.tar.gz .
             cd .circleci/ansible
-            ansible-playbook -i inventory.txt deploy-backend.yml
+            ansible-playbook -i inventory.txt deploy-backend.yml -vv
 
             # cd backend
             # npm i
