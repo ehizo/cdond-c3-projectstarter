@@ -240,9 +240,9 @@ jobs:
                 curl https://kvdb.io/Urm8BbpLxVAk4E4WkkBp9w/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
             fi
       # code to rollback on failure
-      - destroy-environment:
-          workflowid: ${CIRCLE_WORKFLOW_ID:0:7} 
       - revert-migrations:
+          workflowid: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment: 
           workflowid: ${CIRCLE_WORKFLOW_ID:0:7}     
 
   deploy-frontend:
@@ -288,9 +288,9 @@ jobs:
             # aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
             aws s3 sync . "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --delete
       # code to rollback on failure
-      - destroy-environment:
-          workflowid: ${CIRCLE_WORKFLOW_ID:0:7}
       - revert-migrations:
+          workflowid: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment: 
           workflowid: ${CIRCLE_WORKFLOW_ID:0:7}
                     
   deploy-backend:
@@ -335,10 +335,10 @@ jobs:
             # cat inventory.txt
             # ansible-playbook -i inventory.txt deploy-backend.yml
       # code to rollback on failure
-      - destroy-environment:
-          workflowid: ${CIRCLE_WORKFLOW_ID:0:7} 
       - revert-migrations:
-          workflowid: ${CIRCLE_WORKFLOW_ID:0:7}  
+          workflowid: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment: 
+          workflowid: ${CIRCLE_WORKFLOW_ID:0:7} 
 
   smoke-test:
     docker:
@@ -388,10 +388,10 @@ jobs:
               return 1
             fi
       # rollback on failure
-      - destroy-environment:
-          workflowid: ${CIRCLE_WORKFLOW_ID:0:7} 
       - revert-migrations:
-          workflowid: ${CIRCLE_WORKFLOW_ID:0:7}            
+          workflowid: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment: 
+          workflowid: ${CIRCLE_WORKFLOW_ID:0:7}           
 
   cloudfront-update:
     docker:
@@ -414,10 +414,10 @@ jobs:
                     --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
                     --tags project=udapeople
       # rollback on failure
-      - destroy-environment:
-          workflowid: ${CIRCLE_WORKFLOW_ID:0:7} 
       - revert-migrations:
-          workflowid: ${CIRCLE_WORKFLOW_ID:0:7}              
+          workflowid: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment: 
+          workflowid: ${CIRCLE_WORKFLOW_ID:0:7}            
 
 cleanup:
     docker:
