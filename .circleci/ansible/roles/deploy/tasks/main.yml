@@ -1,36 +1,36 @@
----
-- name: "Create backend app dir"
-  file:
-    path: ~/backend-app
-    state: directory
+- name: "upgrade packages."
+  become: true
+  apt:
+    upgrade: "yes"
+- name: "install dependencies."
+  become: true
+  apt:
+    name: ["nodejs", "npm"]
+    update_cache: yes
 
-- name: "Extract backend files"
-  unarchive:
-    src: artifact.tar.gz 
-    dest: ~/backend-app
+- name: "copy backend file"
+  become: true
+  copy:
+    src: /root/project/backend
+    dest: /root
+    force: no
 
-- name: "Install Node Dependencies"
-  shell: |
-    cd ~/backend-app
-    npm i
+    
+- name: "install npm packages"
+  become: true
+  command: npm install --force
+  args:
+    chdir: /root/backend
 
-- name: "Execute app with pm2"
-  shell: |
-    cd ~/backend-app/dist
-    pm2 stop default
-    pm2 start main.js
-
-  register: execute_node
-
-- name: print message
-  debug:
-    msg "{{ execute_node.stdout_lines }}"
-
-- name: "configure  pm2 to start as a service"
-  become : true
-  shell: |
-    env PATH=$PATH:/usr/local/bin pm2 startup systemd -u ubuntu --hp /home/ubuntu
-
-   
+- name: "compile npm packages"
+  become: true
+  command: npm run build
+  args:
+    chdir: /root/backend
 
 
+- name: "start server"
+  become: true
+  command: pm2 start npm -- run start
+  args:
+    chdir: /root/backend
