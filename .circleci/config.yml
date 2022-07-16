@@ -282,8 +282,8 @@ jobs:
             npm install
             npm run build
             # tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
-            # aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-            aws s3 sync . "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --delete
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+            # aws s3 sync . "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --delete
       # code to rollback on failure
       - revert-migrations
       - destroy-environment
@@ -300,7 +300,7 @@ jobs:
             - "fe:36:a6:1b:99:9f:c7:6f:be:04:9f:76:e9:da:dc:c6"
       # attach workspace
       - attach_workspace:
-          at: ~/project
+          at: ~/ # project
       - restore_cache:
           keys: [backend-build]
       - run:
@@ -313,31 +313,52 @@ jobs:
             apk add --update npm
             apk add --update nodejs
       - run:
-          name: Deploy backend 1
+          name: Ansible to copy the files.
           command: |
-            echo ENVIRONMENT=production > "backend/.env"
-            echo TYPEORM_CONNECTION=postgres >> "backend/.env"
-            echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> "backend/.env"
-            echo TYPEORM_MIGRATIONS=./src/migrations/*.ts >> "backend/.env"
-            echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> "backend/.env"
-            echo NODE_ENV=production >> "backend/.env"
-            echo TYPEORM_HOST=$TYPEORM_HOST >> "backend/.env"
-            echo TYPEORM_PORT=$TYPEORM_PORT >> "backend/.env"
-            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> "backend/.env"
-            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
-            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
-            cd backend
-            npm i
-            npm run build
-            tar -czvf /etc/backend.tar.gz ./
-            chmod 644 /etc/backend.tar.gz
+              cd backend
+              npm run build
+              tar -czf artifact.tar.gz  dist/* package*
+              dir
+              cd ..
+              cp backend/artifact.tar.gz  .circleci/ansible/roles/deploy/files
       - run:
-          name: Deploy backend 2
+          name: Deploy backend
           command: |
-            export ANSIBLE_HOST_KEY_CHECKING=False
-            ansible-playbook \
-              -i .circleci/ansible/inventory.txt \
-              .circleci/ansible/deploy-backend.yml
+              export TYPEORM_MIGRATIONS_DIR=./migrations
+              export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
+              export TYPEORM_MIGRATIONS=./migrations/*.ts
+              cd .circleci/ansible
+              cat inventory.txt
+              ansible-playbook -i inventory.txt deploy-backend.yml
+
+
+
+      # - run:
+      #     name: Deploy backend 1
+      #     command: |
+      #       echo ENVIRONMENT=production > "backend/.env"
+      #       echo TYPEORM_CONNECTION=postgres >> "backend/.env"
+      #       echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> "backend/.env"
+      #       echo TYPEORM_MIGRATIONS=./src/migrations/*.ts >> "backend/.env"
+      #       echo TYPEORM_MIGRATIONS_DIR=./src/migrations >> "backend/.env"
+      #       echo NODE_ENV=production >> "backend/.env"
+      #       echo TYPEORM_HOST=$TYPEORM_HOST >> "backend/.env"
+      #       echo TYPEORM_PORT=$TYPEORM_PORT >> "backend/.env"
+      #       echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> "backend/.env"
+      #       echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
+      #       echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
+      #       cd backend
+      #       npm i
+      #       npm run build
+      #       tar -czvf /etc/backend.tar.gz ./
+      #       chmod 644 /etc/backend.tar.gz
+      # - run:
+      #     name: Deploy backend 2
+      #     command: |
+      #       export ANSIBLE_HOST_KEY_CHECKING=False
+      #       ansible-playbook \
+      #         -i .circleci/ansible/inventory.txt \
+      #         .circleci/ansible/deploy-backend.yml -vv
       # code to rollback on failure
       - revert-migrations
       - destroy-environment 
