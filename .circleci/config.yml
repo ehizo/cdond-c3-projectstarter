@@ -425,6 +425,8 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/
+          paths:
+            - project/workflowids/OldWorkflowID.txt
       - run:
           name: Install dependencies
           command: |
