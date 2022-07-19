@@ -448,8 +448,6 @@ jobs:
               aws s3 rm s3://udapeople-${OldWorkflowID} --recursive
               aws cloudformation delete-stack --stack-name backend-infra-${OldWorkflowID}
               aws cloudformation delete-stack --stack-name frontend-infra-${OldWorkflowID}
-            else
-              echo "there are no old stacks to cleanup"
             fi
 
 
