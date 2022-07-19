@@ -398,7 +398,7 @@ jobs:
           name: Update cloudfront distribution
           command: |
             export OldWorkflowID=$(aws cloudformation list-exports --query "Exports[?Name==\`WorkflowID\`].Value" --no-paginate --output text)
-            echo $OldWorkflowID > frontend/OldWorkflowID.txt
+            echo $OldWorkflowID > workflowids/OldWorkflowID.txt
 
             aws cloudformation deploy \
             --template-file .circleci/files/cloudfront.yml \
@@ -411,7 +411,7 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - project/frontend/OldWorkflowID.txt
+            - project/workflowids/OldWorkflowID.txt
       # rollback on failure
       - revert-migrations
       - destroy-environment            
@@ -434,7 +434,7 @@ jobs:
       - run:
           name: Delete old stacks and files
           command: |
-            cd ~/project/frontend
+            cd ~/project/workflowids
             OldWorkflowID = $(cat OldWorkflowID.txt)
             echo OldWorkflowID: "${OldWorkflowID: -7}"
             echo CIRCLE_WORKFLOW_ID: "${CIRCLE_WORKFLOW_ID:0:7}"
