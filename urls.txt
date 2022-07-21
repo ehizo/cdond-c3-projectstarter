@@ -1,0 +1,18 @@
+
+URL01: Link to Public github repository:
+https://github.com/ehizo/cdond-c3-projectstarter
+
+URL02:
+link to S3 bucket
+http://udapeople-44ba95c.s3-website-us-east-1.amazonaws.com
+
+Link to cloudfront
+http://d3j2ide78rlhvl.cloudfront.net
+
+URL04_SCREENSHOT
+http://54.144.52.164:3030/api/status
+
+URL05_SCREENSHOT
+ec2-3-82-173-80.compute-1.amazonaws.com:9090
+///Prometheus URL
+
